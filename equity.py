@@ -65,6 +65,13 @@ class Equity:
 
     return excess_return
 
+  def dividend_yield(self):
+    """
+    Found by annualizing the dividend payout and dividing by the current stock price
+    """
+    print (self.monthly_activity)
+    return 0
+
   def _fetch_data(self, fn, key):
     # make request
     response = requests.get(API_DOMAIN_ROOT + fn + '&symbol=' + self.symbol + '&apikey=GQ383NOJKHTC4129&datatype=json')

@@ -14,5 +14,7 @@
 1. Install package dependencies:
 
 -- `pip install pandas`
+-- `pip install requests`
+-- `pip install scipy`
 
 1. Run app: `python exec.py <symbol>`
