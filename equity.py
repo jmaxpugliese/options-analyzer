@@ -18,6 +18,12 @@ class Equity:
     self.daily_activity = self._fetch_data('TIME_SERIES_DAILY_ADJUSTED', 'Time Series (Daily)')
     self.monthly_activity = self._fetch_data('TIME_SERIES_MONTHLY_ADJUSTED', 'Monthly Adjusted Time Series')
 
+  def price(self):
+    """
+    Return the latest closing price
+    """
+    return pd.to_numeric( self.daily_activity['5. adjusted close'][-1] )
+
   def daily_percent_change(self):
     """
     Calculate the daily percent change of closing price over the last 100 days.
@@ -69,8 +75,31 @@ class Equity:
     """
     Found by annualizing the dividend payout and dividing by the current stock price
     """
-    print (self.monthly_activity)
-    return 0
+    # parse for monthly dividend amount
+    monthly_dividend_amount = pd.to_numeric(self.monthly_activity['7. dividend amount'])
+
+    # dividend pay periods
+    dividend_pay_periods = monthly_dividend_amount[monthly_dividend_amount > 0]
+    
+    # group by year
+    dividend_pay_periods_by_year = dividend_pay_periods.rename(index=lambda s: s[0:4])
+    no_pay_periods_per_year = dividend_pay_periods_by_year.groupby(level=0).count()
+
+    # number of payouts per year
+    payouts_per_year = no_pay_periods_per_year[1]
+
+    # most recent payout
+    dividend_payout = dividend_pay_periods[-1]
+
+    # annual dividend yield
+    annual_payout = dividend_payout * payouts_per_year
+
+    # current stock price
+    price = self.price()
+
+    # dividend yield
+    return annual_payout / price
+
 
   def _fetch_data(self, fn, key):
     # make request
