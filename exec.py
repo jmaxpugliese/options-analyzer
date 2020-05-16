@@ -17,8 +17,11 @@ def main():
   # bes = option.stock_price - option.price - option.dividends
   # print("break even stock price", bes)
 
-  e = Equity('IBM')
-  print( e.dividend_yield() )
+  benchmark = Equity('VOO')
+  print(benchmark.benchmark)
+
+  e = Equity('IBM', benchmark)
+  print( e.beta() )
 
 
 if __name__ == '__main__':

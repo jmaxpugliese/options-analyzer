@@ -16,5 +16,6 @@
 -- `pip install pandas`
 -- `pip install requests`
 -- `pip install scipy`
+-- `pip install statsmodels`
 
 1. Run app: `python exec.py <symbol>`

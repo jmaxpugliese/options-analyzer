@@ -1,5 +1,6 @@
 import math
 import pandas as pd
+import statsmodels.api as sm
 import requests
 
 import fred
@@ -11,8 +12,9 @@ API_DOMAIN_ROOT = 'https://www.alphavantage.co/query?function='
 
 class Equity:
 
-  def __init__(self, symbol):
+  def __init__(self, symbol, benchmark=False):
     self.symbol = symbol
+    self.benchmark = benchmark
 
     # preload raw historical performance
     self.daily_activity = self._fetch_data('TIME_SERIES_DAILY_ADJUSTED', 'Time Series (Daily)')
@@ -23,6 +25,21 @@ class Equity:
     Return the latest closing price
     """
     return pd.to_numeric( self.daily_activity['5. adjusted close'][-1] )
+
+  def beta(self):
+    """
+    Return equity beta to benchmark
+    Computed by comparing slope of asset to slope of benchmark (percent change)
+    """
+    # get daily percent changes
+    benchmark_daily_pct_change = self.benchmark.daily_percent_change()
+    daily_pct_change = self.daily_percent_change()
+
+    # calculate beta
+    r = sm.regression.linear_model.OLS( daily_pct_change[1:].tolist(), benchmark_daily_pct_change[1:].tolist() ).fit()
+    beta = r.params[0]
+    return beta
+
 
   def daily_percent_change(self):
     """
