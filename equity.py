@@ -54,21 +54,25 @@ class Equity:
       return daily_pct_change
     except:
       print(response)
-      
-  
-  def annualized_volatility(self):
+    
+  def daily_volatility(self):
     """
-    Daily price standard deviation extrapolated based on the number of trading days
+    Standard deviation of daily percent change of closing price
     """
     # get daily percent change
     daily_pct_change = self.daily_percent_change()
     
     # calculate daily volatility
     daily_volatility = stats.tstd( daily_pct_change[1:] )
-
+    return daily_volatility
+  
+  def annualized_volatility(self):
+    """
+    Daily price standard deviation extrapolated based on the number of trading days
+    """
     # annualized volatility based on annual trading days
+    daily_volatility = self.daily_volatility()
     annualized_volatility = daily_volatility * math.sqrt( trading_calendar.get_no_trading_days() )
-    
     return annualized_volatility
 
   def recent_daily_excess_return(self):
@@ -116,7 +120,6 @@ class Equity:
 
     # dividend yield
     return annual_payout / price
-
 
   def _fetch_data(self, fn, key):
     # make request
